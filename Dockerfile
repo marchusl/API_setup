@@ -18,4 +18,4 @@ COPY . /PlaywrightApp
 
 # Use gunicorn for production (bind to PORT from Render)
 ENV PORT=10000
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "app:app", "--workers", "1", "--threads", "2"]
+CMD ["gunicorn", "--bind", "0.0.0.0:10000", "PlaywrightApp:app", "--workers", "1", "--threads", "2"]

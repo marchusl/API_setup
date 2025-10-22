@@ -8,6 +8,10 @@ app = Flask(__name__)
 
 jobs = {}
 
+@app.route("/")
+def home():
+    return "✅ Flask + Playwright API is running on Render!"
+
 def run_playwright_job(job_id, url):
     try:
         with sync_playwright() as p:

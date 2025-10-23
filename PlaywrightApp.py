@@ -1,17 +1,41 @@
 from flask import Flask, request, jsonify
 from playwright.sync_api import sync_playwright
-import base64
+from threading import Thread
+import os, uuid
 
 app = Flask(__name__)
+jobs = {}
+
+os.makedirs("static/screenshots", exist_ok=True)
 
 @app.route("/")
 def home():
     return "✅ Flask + Playwright API is running on Render!"
 
+def run_playwright_job(job_id, url):
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto(url, timeout=30000)
+
+            filepath = f"static/screenshots/{job_id}.png"
+            page.screenshot(path=filepath, full_page=True)
+            browser.close()
+
+        jobs[job_id]["status"] = "done"
+        jobs[job_id]["screenshot_url"] = (f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME', 'localhost')}/static/screenshots/{job_id}.png")
+    
+    except Exception as e:
+        jobs[job_id]["status"] = "error"
+        jobs[job_id]["error"] = str(e)
+
+
 @app.route("/run", methods=["POST"])
-def run_playwright_direct():
+def start_job():
     data = request.get_json(force=True)
     url = data.get("url")
+
     if not url:
         return jsonify({"error": "missing url"}), 400
 
@@ -19,21 +43,23 @@ def run_playwright_direct():
     if not url.startswith("http"):
         url = "https://" + url
 
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto(url, timeout=30000)
-            image_bytes = page.screenshot(full_page=True)
-            browser.close()
+    job_id = str(uuid.uuid4())
+    jobs[job_id] = {"status": "started"}
 
-        # Convert to base64 so it's JSON-safe
-        image_base64 = base64.b64encode(image_bytes).decode("ascii")
-        return jsonify({
-            "status": "done",
-            "url": url,
-            "screenshot_base64": image_base64
-        })
+    # Launch Playwright job in a background thread
+    Thread(target=run_playwright_job, args=(job_id, url), daemon=True).start()
 
-    except Exception as e:
-        return jsonify({"status": "error", "error": str(e)}), 500
+    return jsonify({"job_id": job_id, "status": "started"}), 202
+
+@app.route("/status/<job_id>", methods=["GET"])
+def job_status(job_id):
+    job = jobs.get(job_id)
+    if not job:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(job)
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+

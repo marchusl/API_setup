@@ -29,6 +29,8 @@ def run_playwright_job(job_id, url):
     except Exception as e:
         jobs[job_id]["status"] = "error"
         jobs[job_id]["error"] = str(e)
+        jobs[job_id]["screenshot_url"] = "not ready"
+
 
 
 @app.route("/run", methods=["POST"])
@@ -44,7 +46,7 @@ def start_job():
         url = "https://" + url
 
     job_id = str(uuid.uuid4())
-    jobs[job_id] = {"status": "started"}
+    jobs[job_id] = {"status": "started", "screenshot_url": "not ready"}
 
     # Launch Playwright job in a background thread
     Thread(target=run_playwright_job, args=(job_id, url), daemon=True).start()

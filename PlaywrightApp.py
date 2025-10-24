@@ -17,7 +17,7 @@ def run_playwright_job(job_id, url):
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
-            page.goto(url, timeout=30000)
+            page.goto(url)
 
             filepath = f"static/screenshots/{job_id}.png"
             page.screenshot(path=filepath, full_page=True)

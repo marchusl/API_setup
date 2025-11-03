@@ -45,6 +45,10 @@ def job_status(job_id):
         return jsonify({"error": "not found"}), 404
     return jsonify(job)
 
+@app.route("/jobs", methods=["GET"])
+def list_jobs():
+    return jsonify(jobs)
+
 #--------------------------------------------------------------------
 
 def run_playwright_job(job_id, job_type, url, params):

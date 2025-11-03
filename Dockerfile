@@ -1,14 +1,14 @@
 FROM mcr.microsoft.com/playwright/python:latest
-WORKDIR /PlaywrightApp
+WORKDIR /PlaywrightMain
 
-COPY requirements.txt /PlaywrightApp/
+COPY requirements.txt /PlaywrightMain/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Install browsers explicitly
 RUN playwright install --with-deps
 
-COPY . /PlaywrightApp
+COPY . /PlaywrightMain
 
 ENV PORT=10000
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "PlaywrightApp:app", "--workers", "1", "--threads", "2"]
+CMD ["gunicorn", "--bind", "0.0.0.0:10000", "PlaywrightMain:app", "--workers", "1", "--threads", "2"]

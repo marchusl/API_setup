@@ -66,8 +66,10 @@ def run_playwright_job(job_id, job_type, url, params):
 
             browser.close()
 
-        jobs[job_id]["status"] = "done"
-        jobs[job_id]["result"] = result
+        jobs[job_id].update({
+            "status": "done",
+            "result": result or {},
+        })
 
     except Exception as e:
         jobs[job_id]["status"] = "error"

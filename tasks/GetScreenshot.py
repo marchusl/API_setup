@@ -1,7 +1,8 @@
+import os
 
 def take_screenshot(page, job_id):
-    """Takes a full-page screenshot and saves it."""
     filepath = f"static/screenshots/{job_id}.png"
     page.screenshot(path=filepath, full_page=True)
 
-    return {"screenshot_url": filepath}
+    public_url = f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME', 'localhost')}/static/screenshots/{job_id}.png"
+    return {"screenshot_url": public_url}

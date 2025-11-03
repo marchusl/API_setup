@@ -58,6 +58,7 @@ def run_playwright_job(job_id, job_type, url, params):
             # Dispatch job based on job_type
             if job_type == "screenshot":
                 result = take_screenshot(page, job_id)
+
             elif job_type == "click_button":
                 result = click_button(page, params)
             else:

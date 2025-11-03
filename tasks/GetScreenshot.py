@@ -5,4 +5,4 @@ def take_screenshot(page, job_id):
     page.screenshot(path=filepath, full_page=True)
 
     public_url = f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME', 'localhost')}/static/screenshots/{job_id}.png"
-    return {"screenshot_url": public_url}
+    return {public_url}

@@ -3,4 +3,4 @@ def take_screenshot(page, job_id):
     page.screenshot(path=filepath, full_page=True)
 
     screenshot_url = f"https://api-setup-nd3w.onrender.com/static/screenshots/{job_id}.png"
-    return {screenshot_url}
+    return {str(screenshot_url)}

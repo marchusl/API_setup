@@ -35,7 +35,7 @@ def start_job():
     # Launch Playwright job in a background thread
     Thread(target=run_playwright_job, args=(job_id, job_type, url, params), daemon=True).start()
 
-    return jsonify({"job_id": job_id, "status": "started", "job_type": job_type, "output": None}), 202
+    return jsonify({"job_id": job_id, "status": "started", "job_type": job_type, "output": "not ready"}), 202
 
 @app.route("/status/<job_id>", methods=["GET"])
 def job_status(job_id):

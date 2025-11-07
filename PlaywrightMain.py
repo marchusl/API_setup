@@ -30,7 +30,7 @@ def start_job():
         url = "https://" + url
 
     job_id = str(uuid.uuid4())
-    jobs[job_id] = {"status": "started", "result": "Not ready yet", "job_type": job_type}
+    jobs[job_id] = {"job_id": job_id, "status": "started", "result": "Not ready yet", "job_type": job_type}
 
     # Launch Playwright job in a background thread
     Thread(target=run_playwright_job, args=(job_id, job_type, url, params), daemon=True).start()
@@ -71,7 +71,6 @@ def run_playwright_job(job_id, job_type, url, params):
             browser.close()
 
         jobs[job_id].update({
-            "job_id": job_id,
             "status": "done",
             "result": result or {},
             })
